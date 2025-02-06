@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # 데이터 로드 함수
 def load_data():
@@ -50,3 +51,23 @@ df_result = calculate_remaining_majors(df_filtered)
 # 나머지 전공 표시
 st.subheader("Remaining Majors for Students")
 st.dataframe(df_result[['학번', 'Remaining Majors']])
+
+# 원형 차트 생성 함수
+def plot_pie_chart(df_filtered, df_majors):
+    major_list = df_majors['전공'].tolist()
+    
+    major_counts = {}
+    for _, row in df_filtered.iterrows():
+        for col in ['전공1', '전공2', '전공3', '전공4']:
+            if pd.notna(row[col]) and row[col] in major_list:
+                major_counts[row[col]] = major_counts.get(row[col], 0) + 1
+    
+    if major_counts:
+        fig, ax = plt.subplots()
+        ax.pie(major_counts.values(), labels=major_counts.keys(), autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
+        st.subheader("Major Distribution Pie Chart")
+        st.pyplot(fig)
+
+# 원형 차트 출력
+plot_pie_chart(df_filtered, df_majors)
