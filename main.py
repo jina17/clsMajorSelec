@@ -1,59 +1,52 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# 페이지 설정
-st.set_page_config(page_title="Graduated Students Analysis", layout="wide")
-
-# 데이터 로드
+# 데이터 로드 함수
 def load_data():
-    file_path = "Final_Organized_Graduated_Students.csv"
-    return pd.read_csv(file_path)
+    student_data_path = "Final_Organized_Graduated_Students.csv"
+    major_total_path = "major_total.csv"
+    
+    df_students = pd.read_csv(student_data_path)
+    df_majors = pd.read_csv(major_total_path)
+    return df_students, df_majors
 
-df = load_data()
+df_students, df_majors = load_data()
 
 # 헤더
-st.title("Graduated Students Data Analysis")
+st.title("Major Analysis by Student ID")
 st.markdown("""
-이 대시보드는 서울대 자유전공학부 졸업생들의 전공 선택 현황을 분석합니다.
-각 학생별로 최대 4개의 전공을 선택할 수 있습니다.
+이 대시보드는 학생들의 전공 선택과 특정 전공 포함 여부를 분석합니다.
 """)
 
-# 데이터 표시
-st.subheader("Raw Data Preview")
-st.dataframe(df)
+# 전공 포함 여부 확인 함수
+def filter_students_by_major(df_students, df_majors):
+    major_list = df_majors['전공'].tolist()
+    
+    def has_major(row):
+        return any(row[col] in major_list for col in ['전공1', '전공2', '전공3', '전공4'] if pd.notna(row[col]))
+    
+    return df_students[df_students.apply(has_major, axis=1)]
 
-# 전공별 학생 수 분석
-def count_major_occurrences(df):
-    majors = df[['전공1', '전공2', '전공3', '전공4']].values.flatten()
-    majors = [major for major in majors if pd.notna(major)]
-    return pd.Series(majors).value_counts()
+df_filtered = filter_students_by_major(df_students, df_majors)
 
-st.subheader("Major Selection Distribution")
-major_counts = count_major_occurrences(df)
-
-fig, ax = plt.subplots()
-major_counts.plot(kind='bar', ax=ax)
-ax.set_ylabel("Number of Students")
-ax.set_title("Distribution of Selected Majors")
-st.pyplot(fig)
-
-# 전공별 필터링
-st.subheader("Filter by Major")
-selected_major = st.selectbox("Select a major to filter students:", ["All"] + list(major_counts.index))
-if selected_major != "All":
-    df_filtered = df[df.isin([selected_major]).any(axis=1)]
-else:
-    df_filtered = df
+# 필터링된 데이터 표시
+st.subheader("Students with Specified Majors")
 st.dataframe(df_filtered)
 
-# 학번 검색 기능
-st.subheader("Search by Student ID")
-search_id = st.text_input("Enter student ID:")
-if search_id:
-    search_results = df[df['학번'].astype(str).str.contains(search_id, na=False)]
-    st.dataframe(search_results)
+# 나머지 전공 분석 함수
+def calculate_remaining_majors(df_filtered):
+    remaining_majors = []
+    for _, row in df_filtered.iterrows():
+        selected_majors = [row[col] for col in ['전공1', '전공2', '전공3', '전공4'] if pd.notna(row[col])]
+        included_majors = set(selected_majors) & set(df_majors['전공'].tolist())
+        remaining = [major for major in selected_majors if major not in included_majors]
+        remaining_majors.append(remaining)
+    
+    df_filtered['Remaining Majors'] = remaining_majors
+    return df_filtered
 
-# 앱 종료
-st.markdown("---")
-st.write("Developed for analyzing graduated students' major selection trends.")
+df_result = calculate_remaining_majors(df_filtered)
+
+# 나머지 전공 표시
+st.subheader("Remaining Majors for Students")
+st.dataframe(df_result[['학번', 'Remaining Majors']])
