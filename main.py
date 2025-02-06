@@ -4,8 +4,6 @@ import matplotlib
 matplotlib.use("Agg")  # 백엔드 설정
 import matplotlib.pyplot as plt
 
-pip install -r requirements.txt
-
 # 데이터 로드 함수
 def load_data():
     student_data_path = "Final_Organized_Graduated_Students.csv"
