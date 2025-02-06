@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")  # 백엔드 설정
 import matplotlib.pyplot as plt
 
 # 데이터 로드 함수
@@ -33,24 +35,6 @@ df_filtered = filter_students_by_major(df_students, df_majors)
 # 필터링된 데이터 표시
 st.subheader("Students with Specified Majors")
 st.dataframe(df_filtered)
-
-# 나머지 전공 분석 함수
-def calculate_remaining_majors(df_filtered):
-    remaining_majors = []
-    for _, row in df_filtered.iterrows():
-        selected_majors = [row[col] for col in ['전공1', '전공2', '전공3', '전공4'] if pd.notna(row[col])]
-        included_majors = set(selected_majors) & set(df_majors['전공'].tolist())
-        remaining = [major for major in selected_majors if major not in included_majors]
-        remaining_majors.append(remaining)
-    
-    df_filtered['Remaining Majors'] = remaining_majors
-    return df_filtered
-
-df_result = calculate_remaining_majors(df_filtered)
-
-# 나머지 전공 표시
-st.subheader("Remaining Majors for Students")
-st.dataframe(df_result[['학번', 'Remaining Majors']])
 
 # 원형 차트 생성 함수
 def plot_pie_chart(df_filtered, df_majors):
