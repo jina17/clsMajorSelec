@@ -1,57 +1,44 @@
 import streamlit as st
 import pandas as pd
-import matplotlib
-matplotlib.use("Agg")  # 백엔드 설정
 import matplotlib.pyplot as plt
 
-# 데이터 로드 함수
+# 파일 로드
+@st.cache_data
 def load_data():
-    student_data_path = "Final_Organized_Graduated_Students.csv"
-    major_total_path = "major_total.csv"
+    df_major_total = pd.read_csv("major_total.csv", encoding="utf-8")
+    df_summary = pd.read_csv("정리.csv", encoding="utf-8-sig")
+    return df_major_total, df_summary
+
+df_major_total, df_summary = load_data()
+
+# UI 설정
+st.title("전공별 연관 분석")
+
+# 전공 선택 필터
+target_major = st.selectbox("분포를 확인할 전공을 선택하세요:", df_major_total['전공'].unique())
+
+# 전공 등장 여부 확인
+def get_related_majors(df, target_major):
+    related_majors = []
+    for _, row in df.iterrows():
+        if target_major in [row['첫번째 전공'], row['두번째 전공'], row['세번째 전공']]:
+            majors = [row['첫번째 전공'], row['두번째 전공'], row['세번째 전공']]
+            majors.remove(target_major)  # 선택된 전공 제외
+            related_majors.extend([m for m in majors if pd.notna(m)])
+    return related_majors
+
+# 연관 전공 데이터 추출
+related_majors = get_related_majors(df_summary, target_major)
+
+if related_majors:
+    # 데이터 시각화 (원형 차트)
+    st.subheader(f"'{target_major}'와 함께 등장한 전공 분포")
+    major_counts = pd.Series(related_majors).value_counts()
     
-    df_students = pd.read_csv(student_data_path)
-    df_majors = pd.read_csv(major_total_path)
-    return df_students, df_majors
-
-df_students, df_majors = load_data()
-
-# 헤더
-st.title("Major Analysis by Student ID")
-st.markdown("""
-이 대시보드는 학생들의 전공 선택과 특정 전공 포함 여부를 분석합니다.
-""")
-
-# 전공 포함 여부 확인 함수
-def filter_students_by_major(df_students, df_majors):
-    major_list = df_majors['전공'].tolist()
+    fig, ax = plt.subplots()
+    ax.pie(major_counts, labels=major_counts.index, autopct='%1.1f%%', startangle=90, counterclock=False)
+    ax.set_aspect('equal')  # 원형 유지
     
-    def has_major(row):
-        return any(row[col] in major_list for col in ['전공1', '전공2', '전공3', '전공4'] if pd.notna(row[col]))
-    
-    return df_students[df_students.apply(has_major, axis=1)]
-
-df_filtered = filter_students_by_major(df_students, df_majors)
-
-# 필터링된 데이터 표시
-st.subheader("Students with Specified Majors")
-st.dataframe(df_filtered)
-
-# 원형 차트 생성 함수
-def plot_pie_chart(df_filtered, df_majors):
-    major_list = df_majors['전공'].tolist()
-    
-    major_counts = {}
-    for _, row in df_filtered.iterrows():
-        for col in ['전공1', '전공2', '전공3', '전공4']:
-            if pd.notna(row[col]) and row[col] in major_list:
-                major_counts[row[col]] = major_counts.get(row[col], 0) + 1
-    
-    if major_counts:
-        fig, ax = plt.subplots()
-        ax.pie(major_counts.values(), labels=major_counts.keys(), autopct='%1.1f%%', startangle=90)
-        ax.axis('equal')
-        st.subheader("Major Distribution Pie Chart")
-        st.pyplot(fig)
-
-# 원형 차트 출력
-plot_pie_chart(df_filtered, df_majors)
+    st.pyplot(fig)
+else:
+    st.write("해당 전공과 함께 등장한 다른 전공이 없습니다.")
