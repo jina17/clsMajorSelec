@@ -42,7 +42,7 @@ def main():
         df_plot = pd.DataFrame({"전공": distribution.index, "수량": distribution.values})
         
         # Plotly 원형 차트 사용하여 호버 기능 추가
-        fig = px.pie(df_plot, names='전공', values='수량', title=f'"{selected_major}"와 함께 등장한 전공 분포',
+        fig = px.pie(df_plot, names='전공', values='수량', title=f'"{selected_major}"을 선택한 학생들이 선택한 전공들',
                      hover_data=['수량'], labels={'수량': '비율'}, hole=0.3)
         fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value+percent')
         
