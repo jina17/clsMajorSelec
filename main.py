@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import koreanize_matplotlib  # 한글 자동 적용
 
 # 설치된 폰트 확인 (디버깅용)
-available_fonts = [f.name for f in plt.rcParams['font.family']]
+available_fonts = plt.rcParams['font.family']
 st.write("Available fonts:", available_fonts)
 
 def load_data():
