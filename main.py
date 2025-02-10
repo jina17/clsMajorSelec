@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # 파일 로드
 @st.cache_data
@@ -31,14 +30,10 @@ def get_related_majors(df, target_major):
 related_majors = get_related_majors(df_summary, target_major)
 
 if related_majors:
-    # 데이터 시각화 (원형 차트)
+    # 데이터 시각화 (막대 차트)
     st.subheader(f"'{target_major}'와 함께 등장한 전공 분포")
     major_counts = pd.Series(related_majors).value_counts()
     
-    fig, ax = plt.subplots()
-    ax.pie(major_counts, labels=major_counts.index, autopct='%1.1f%%', startangle=90, counterclock=False)
-    ax.set_aspect('equal')  # 원형 유지
-    
-    st.pyplot(fig)
+    st.bar_chart(major_counts)
 else:
     st.write("해당 전공과 함께 등장한 다른 전공이 없습니다.")
