@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+plt.rcParams['font.family'] = 'Malgun Gothic'  # 한글 폰트 설정
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 def load_data():
     # 데이터 로드
