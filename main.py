@@ -51,7 +51,7 @@ def main():
         
         st.plotly_chart(fig)
         # 부제목을 차트 아래에 배치하고 오른쪽 정렬
-        st.markdown("<div style='text-align: right; font-size: 12px;'>2024. 2월 졸업생 기준. 자유전공학부 학사지도실 작성</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: right; font-size: 12px;'>2024. 2월까지의 졸업생 기준. 자유전공학부 학사지도실 작성</div>", unsafe_allow_html=True)
     else:
         st.write("선택한 전공과 함께 등장하는 다른 전공이 없습니다.")
 
