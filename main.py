@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+st.set_page_config(page_title="서울대 자유전공학부 전공선택현황", page_icon="📊")
+
 def load_data():
     # 데이터 로드
     indivi_major = pd.read_csv("indivi_major.csv")
