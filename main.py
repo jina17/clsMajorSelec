@@ -33,7 +33,7 @@ def main():
     
     # 전공 선택
     major_list = major_total['전공'].unique()
-    selected_major = st.selectbox("전공 선택", major_list)
+    selected_major = st.selectbox("확인하고 싶은 전공을 선택해주세요", major_list)
     
     # 데이터 필터링 및 그래프 생성
     distribution = plot_major_distribution(indivi_major, selected_major)
