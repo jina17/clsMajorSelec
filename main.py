@@ -27,6 +27,7 @@ def plot_major_distribution(df, selected_major):
 
 def main():
     st.title("서울대 자유전공학부 전공선택현황")
+    st.subheader("2024. 2월 졸업생 기준 | 자유전공학부 학사지도실 작성")
     
     # 데이터 로드
     indivi_major, major_total = load_data()
