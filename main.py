@@ -46,6 +46,9 @@ def main():
                      hover_data=['수량'], labels={'수량': '비율'}, hole=0.3)
         fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value+percent')
         
+        # 범례 제거 및 차트 크기 확대
+        fig.update_layout(showlegend=False, height=700, width=700)
+        
         st.plotly_chart(fig)
     else:
         st.write("선택한 전공과 함께 등장하는 다른 전공이 없습니다.")
