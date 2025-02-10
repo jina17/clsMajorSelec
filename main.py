@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
 # Mac용 한글 폰트 설정
-plt.rcParams['font.family'] = 'AppleGothic'
+plt.rcParams['font.family'] = 'AppleMyungjo'
 plt.rcParams['axes.unicode_minus'] = False
 
 def load_data():
@@ -53,8 +53,8 @@ def main():
                                         startangle=90)
         
         # 폰트 크기 조정
-        plt.setp(autotexts, size=8, fontfamily='AppleGothic')
-        plt.setp(texts, size=8, fontfamily='AppleGothic')
+        plt.setp(autotexts, size=8, fontfamily='AppleMyungjo')
+        plt.setp(texts, size=8, fontfamily='AppleMyungjo')
         
         ax.axis('equal')
         st.pyplot(fig)
