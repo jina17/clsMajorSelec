@@ -3,10 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import koreanize_matplotlib  # 한글 자동 적용
 
-# 설치된 폰트 확인 (디버깅용)
-available_fonts = plt.rcParams['font.family']
-st.write("Available fonts:", available_fonts)
-
 def load_data():
     # 데이터 로드
     indivi_major = pd.read_csv("indivi_major.csv")
@@ -19,16 +15,16 @@ def plot_major_distribution(df, selected_major):
     second_major_mask = df['두번째 전공'] == selected_major
     third_major_mask = df['세번째 전공'] == selected_major
     
-    distributions = {}
+    combined_distribution = pd.Series(dtype=int)
     
     if first_major_mask.sum() > 0:
-        distributions['첫번째 전공에서 등장'] = df.loc[first_major_mask, '두번째 전공'].value_counts()
+        combined_distribution = combined_distribution.add(df.loc[first_major_mask, '두번째 전공'].value_counts(), fill_value=0)
     if second_major_mask.sum() > 0:
-        distributions['두번째 전공에서 등장'] = df.loc[second_major_mask, '첫번째 전공'].value_counts()
+        combined_distribution = combined_distribution.add(df.loc[second_major_mask, '첫번째 전공'].value_counts(), fill_value=0)
     if third_major_mask.sum() > 0:
-        distributions['세번째 전공에서 등장'] = df.loc[third_major_mask, '첫번째 전공'].value_counts()
+        combined_distribution = combined_distribution.add(df.loc[third_major_mask, '첫번째 전공'].value_counts(), fill_value=0)
     
-    return distributions
+    return combined_distribution.sort_values(ascending=False)
 
 def main():
     st.title("전공 분포 분석")
@@ -41,22 +37,21 @@ def main():
     selected_major = st.selectbox("전공 선택", major_list)
     
     # 데이터 필터링 및 그래프 생성
-    distributions = plot_major_distribution(indivi_major, selected_major)
+    distribution = plot_major_distribution(indivi_major, selected_major)
     
-    for title, dist in distributions.items():
-        st.subheader(title)
-        # 그래프 생성
+    if not distribution.empty:
         fig, ax = plt.subplots(figsize=(10, 8))
-        wedges, texts, autotexts = ax.pie(dist, 
-                                          labels=dist.index, 
-                                          autopct='%1.1f%%', 
-                                          startangle=90)
-        # 폰트 속성 직접 설정 제거 (자동 적용)
-        plt.setp(autotexts, size=8)
-        plt.setp(texts, size=8)
+        wedges, texts, autotexts = ax.pie(
+            distribution,
+            labels=[label if value / distribution.sum() >= 0.03 else "" for label, value in zip(distribution.index, distribution)],
+            autopct=lambda p: f'{p:.1f}%' if p >= 3 else '',
+            startangle=90
+        )
         ax.axis('equal')
         st.pyplot(fig)
         plt.close(fig)
+    else:
+        st.write("선택한 전공과 함께 등장하는 다른 전공이 없습니다.")
 
 if __name__ == "__main__":
     main()
