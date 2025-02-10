@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
 
-# 한글 폰트 설정 (나눔고딕 또는 다른 기본 폰트 적용)
-plt.rcParams['font.family'] = fm.FontProperties(fname='/usr/share/fonts/truetype/nanum/NanumGothic.ttf').get_name()
+# 기본적인 한글 폰트 설정 (OS에 따라 자동 선택)
+plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 def load_data():
