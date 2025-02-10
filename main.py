@@ -3,9 +3,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-# Mac용 한글 폰트 설정
-plt.rcParams['font.family'] = 'AppleMyungjo'
-plt.rcParams['axes.unicode_minus'] = False
+# 설치된 폰트 확인 및 출력 (디버깅용)
+available_fonts = [f.name for f in fm.fontManager.ttflist]
+st.write("Available fonts:", available_fonts)
+
+# Mac 한글 폰트 설정 시도
+try:
+    plt.rcParams['font.family'] = ['Malgun Gothic', 'AppleGothic', 'Arial Unicode MS']
+    plt.rcParams['font.sans-serif'] = ['Malgun Gothic', 'AppleGothic', 'Arial Unicode MS']
+    plt.rcParams['axes.unicode_minus'] = False
+    
+    # 폰트 캐시 재생성
+    fm._rebuild()
+except:
+    st.error("한글 폰트 설정에 실패했습니다.")
 
 def load_data():
     # 데이터 로드
@@ -45,20 +56,22 @@ def main():
     
     for title, dist in distributions.items():
         st.subheader(title)
-        fig, ax = plt.subplots(figsize=(10, 8))
-        
-        wedges, texts, autotexts = ax.pie(dist, 
-                                        labels=dist.index, 
-                                        autopct='%1.1f%%', 
-                                        startangle=90)
-        
-        # 폰트 크기 조정
-        plt.setp(autotexts, size=8, fontfamily='AppleMyungjo')
-        plt.setp(texts, size=8, fontfamily='AppleMyungjo')
-        
-        ax.axis('equal')
-        st.pyplot(fig)
-        plt.close(fig)
+        # 그래프 생성 전에 한글 폰트 명시적 설정
+        with plt.style.context('default'):
+            fig, ax = plt.subplots(figsize=(10, 8))
+            wedges, texts, autotexts = ax.pie(dist, 
+                                            labels=dist.index, 
+                                            autopct='%1.1f%%', 
+                                            startangle=90)
+            
+            # 폰트 속성 직접 설정
+            font_prop = fm.FontProperties(family=['Malgun Gothic', 'AppleGothic', 'Arial Unicode MS'])
+            plt.setp(autotexts, size=8, fontproperties=font_prop)
+            plt.setp(texts, size=8, fontproperties=font_prop)
+            
+            ax.axis('equal')
+            st.pyplot(fig)
+            plt.close(fig)
 
 if __name__ == "__main__":
     main()
