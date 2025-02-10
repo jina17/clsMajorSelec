@@ -3,24 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-# 한글 폰트 설정
-try:
-    # Windows의 경우
-    plt.rcParams['font.family'] = 'Malgun Gothic'
-except:
-    try:
-        # Mac의 경우
-        plt.rcParams['font.family'] = 'AppleGothic'
-    except:
-        try:
-            # Linux의 경우
-            plt.rcParams['font.family'] = 'NanumGothic'
-        except:
-            # 기본 설정
-            plt.rcParams['font.family'] = 'sans-serif'
-            plt.rcParams['font.sans-serif'] = ['NanumGothic', 'Malgun Gothic', 'AppleGothic']
-
-plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
+# Mac용 한글 폰트 설정
+plt.rcParams['font.family'] = 'AppleGothic'
+plt.rcParams['axes.unicode_minus'] = False
 
 def load_data():
     # 데이터 로드
@@ -60,19 +45,20 @@ def main():
     
     for title, dist in distributions.items():
         st.subheader(title)
-        fig, ax = plt.subplots(figsize=(10, 8))  # 그래프 크기 조정
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
         wedges, texts, autotexts = ax.pie(dist, 
                                         labels=dist.index, 
                                         autopct='%1.1f%%', 
                                         startangle=90)
         
         # 폰트 크기 조정
-        plt.setp(autotexts, size=8)
-        plt.setp(texts, size=8)
+        plt.setp(autotexts, size=8, fontfamily='AppleGothic')
+        plt.setp(texts, size=8, fontfamily='AppleGothic')
         
-        ax.axis('equal')  # 원형 차트 유지
+        ax.axis('equal')
         st.pyplot(fig)
-        plt.close(fig)  # 메모리 관리를 위해 figure 닫기
+        plt.close(fig)
 
 if __name__ == "__main__":
     main()
