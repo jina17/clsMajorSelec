@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-plt.rcParams['font.family'] = 'Malgun Gothic'  # 한글 폰트 설정
+import matplotlib.font_manager as fm
+
+# 한글 폰트 설정 (나눔고딕 또는 다른 기본 폰트 적용)
+plt.rcParams['font.family'] = fm.FontProperties(fname='/usr/share/fonts/truetype/nanum/NanumGothic.ttf').get_name()
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 def load_data():
