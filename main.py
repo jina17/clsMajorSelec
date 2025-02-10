@@ -1,9 +1,25 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
-# 기본적인 한글 폰트 설정 (OS에 따라 자동 선택)
-plt.rcParams['font.family'] = 'sans-serif'
+# 한글 폰트 설정
+try:
+    # Windows의 경우
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+except:
+    try:
+        # Mac의 경우
+        plt.rcParams['font.family'] = 'AppleGothic'
+    except:
+        try:
+            # Linux의 경우
+            plt.rcParams['font.family'] = 'NanumGothic'
+        except:
+            # 기본 설정
+            plt.rcParams['font.family'] = 'sans-serif'
+            plt.rcParams['font.sans-serif'] = ['NanumGothic', 'Malgun Gothic', 'AppleGothic']
+
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 def load_data():
@@ -44,10 +60,19 @@ def main():
     
     for title, dist in distributions.items():
         st.subheader(title)
-        fig, ax = plt.subplots()
-        ax.pie(dist, labels=dist.index, autopct='%1.1f%%', startangle=90)
+        fig, ax = plt.subplots(figsize=(10, 8))  # 그래프 크기 조정
+        wedges, texts, autotexts = ax.pie(dist, 
+                                        labels=dist.index, 
+                                        autopct='%1.1f%%', 
+                                        startangle=90)
+        
+        # 폰트 크기 조정
+        plt.setp(autotexts, size=8)
+        plt.setp(texts, size=8)
+        
         ax.axis('equal')  # 원형 차트 유지
         st.pyplot(fig)
+        plt.close(fig)  # 메모리 관리를 위해 figure 닫기
 
 if __name__ == "__main__":
     main()
