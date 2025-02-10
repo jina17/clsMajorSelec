@@ -26,7 +26,7 @@ def plot_major_distribution(df, selected_major):
     return combined_distribution.sort_values(ascending=False)
 
 def main():
-    st.title("전공 분포 분석")
+    st.title("서울대 자유전공학부 전공선택현황")
     
     # 데이터 로드
     indivi_major, major_total = load_data()
