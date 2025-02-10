@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import koreanize_matplotlib  # 한글 자동 적용
+import plotly.express as px
 
 def load_data():
     # 데이터 로드
@@ -40,16 +39,14 @@ def main():
     distribution = plot_major_distribution(indivi_major, selected_major)
     
     if not distribution.empty:
-        fig, ax = plt.subplots(figsize=(10, 8))
-        wedges, texts, autotexts = ax.pie(
-            distribution,
-            labels=[label if value / distribution.sum() >= 0.03 else "" for label, value in zip(distribution.index, distribution)],
-            autopct=lambda p: f'{p:.1f}%' if p >= 3 else '',
-            startangle=90
-        )
-        ax.axis('equal')
-        st.pyplot(fig)
-        plt.close(fig)
+        df_plot = pd.DataFrame({"전공": distribution.index, "수량": distribution.values})
+        
+        # Plotly 원형 차트 사용하여 호버 기능 추가
+        fig = px.pie(df_plot, names='전공', values='수량', title=f'"{selected_major}"와 함께 등장한 전공 분포',
+                     hover_data=['수량'], labels={'수량': '비율'}, hole=0.3)
+        fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value+percent')
+        
+        st.plotly_chart(fig)
     else:
         st.write("선택한 전공과 함께 등장하는 다른 전공이 없습니다.")
 
